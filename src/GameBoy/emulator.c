@@ -5,6 +5,9 @@
 
 static void emulate();
 static void Log_Cartridge_Info();
+static void Set_Emulator(const char * fileName);
+static void Set_Game_Boy_Memory();
+
 
 typedef struct {
 
@@ -16,29 +19,22 @@ typedef struct {
 static Game_Boy_Emulator emu;
 static Game_Boy gb;
 
-void Init_Game_Boy_Emulator(    int argc,
-                                char ** argv) {
+/*
+cool way to create a defined map , maybe ? .
+static int arr[] = {
+    [0x0] 1,
+    [0x1] 2,
+    [0x4] 3
+};
+*/
 
-    emu.isRunning = true;
-    //default as of now , will change later 
-    emu.programCounter = 0x00;
 
-    if(argc < 2) {
-        printf("Useage : emu <filename> \n");
-        return;
-    }
+void Init_Game_Boy_Emulator(int argc,char ** argv) {
 
-    emu.romName = argv[1];
-    emu.romSize = GetFileSize(emu.romName);
+    Set_Emulator(argv[1]);
 
-    gb.gbMem = Init_Game_Boy_Memory(emu.romName);
-    gb.gbCartridge = Init_Game_Boy_Cartridge();
-
-    GetFile(emu.romName,gb.gbMem->rom);
-    Set_Cartridge_header(gb.gbCartridge,gb.gbMem);
-
-    printf("\n");
-
+    Set_Game_Boy_Memory();
+    
     Log_Cartridge_Info();
 
     if(Cartridge_Check_Sum(gb.gbCartridge,gb.gbMem) == true) 
@@ -47,7 +43,37 @@ void Init_Game_Boy_Emulator(    int argc,
         Log_Message("Emualtor failed to set up !. \n check for corrupt/wrong file !");
         exit(0);
     }
+
         
+}
+
+static void Set_Emulator(const char * fileName) {
+
+    
+    emu.isRunning = true;
+    //default as of now , will change later 
+    emu.programCounter = 0x00;
+
+    emu.romName = fileName;
+    emu.romSize = GetFileSize(emu.romName);
+
+}
+
+static void Set_Game_Boy_Memory() {
+
+    gb.gbMem = Init_Game_Boy_Memory(emu.romName);
+    gb.gbCartridge = Init_Game_Boy_Cartridge();
+
+    GetFile(emu.romName,gb.gbMem->rom);
+    
+    uint8_t val;
+    for(size_t i = 0x000;i <= 0x3FFF;i++){
+        val = gb.gbMem->rom[i];
+        Write_To_Memory(val,i,gb.gbMem);
+    }
+
+    Set_Cartridge_header(gb.gbCartridge,gb.gbMem);
+
 }
 
 static void Log_Cartridge_Info() {
@@ -64,6 +90,7 @@ static void Log_Cartridge_Info() {
     printf("\tCartridge Color Compality : %04x\n",gb.gbCartridge->colorCompatibility);
     printf("\tCartridge new licensee : %08x\n",gb.gbCartridge->newLiscenseecode);
     printf("\tCartridge SGB Compatibility : %04x\n",gb.gbCartridge->sgbCompatibility);
+    printf("\tCartride memory type : %04x\n",gb.gbCartridge->cartType);
     printf("\tCartridge Cart ROM size : %04x\n",gb.gbCartridge->cartRomsize);
     printf("\tCartridge Cart RAM size : %04x\n",gb.gbCartridge->cartRamsize);
     printf("\tCartridge old licensee code : %04x\n",gb.gbCartridge->oldLiscenseecode);

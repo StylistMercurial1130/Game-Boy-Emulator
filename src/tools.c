@@ -23,8 +23,7 @@ size_t GetFileSize(const char * fileName) {
 
 }
 
-void GetFile(   const char * fileName,
-                uint8_t * buffer) {
+void GetFile(const char * fileName,uint8_t * buffer) {
 
     size_t fileSize = GetFileSize(fileName);
     FILE * _file = fopen(fileName,"rb");
