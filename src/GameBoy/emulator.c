@@ -8,26 +8,17 @@ static void Log_Cartridge_Info();
 static void Set_Emulator(const char * fileName);
 static void Set_Game_Boy_Memory();
 
-
 typedef struct {
 
     Game_Boy_Memory *gbMem;
     Game_Boy_Cartridge * gbCartridge;
+    Memory_Management_Unit * mmu;
+
 
 } Game_Boy;
 
 static Game_Boy_Emulator emu;
 static Game_Boy gb;
-
-/*
-cool way to create a defined map , maybe ? .
-static int arr[] = {
-    [0x0] 1,
-    [0x1] 2,
-    [0x4] 3
-};
-*/
-
 
 void Init_Game_Boy_Emulator(int argc,char ** argv) {
 
@@ -73,7 +64,8 @@ static void Set_Game_Boy_Memory() {
     }
 
     Set_Cartridge_header(gb.gbCartridge,gb.gbMem);
-
+    gb.mmu = Init_MMU(gb.gbCartridge->cartType);
+    
 }
 
 static void Log_Cartridge_Info() {
@@ -114,6 +106,7 @@ static void emulate(){
 
     Delete_Game_Boy_Memory(gb.gbMem);
     Delete_Game_Boy_Cartridge(gb.gbCartridge);
+    Delete_MMU(gb.mmu);
     NOTHING
 
 }

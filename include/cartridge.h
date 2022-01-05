@@ -2,6 +2,7 @@
 #define __CARTRIDGE_H__
 
 #include <tools.h>
+//include issue !
 #include <memory_management_unit.h>
 
 typedef struct {
@@ -23,13 +24,11 @@ typedef struct {
 } Game_Boy_Cartridge;
 
 
-void Set_Cartridge_header(  Game_Boy_Cartridge * cartridge,
-                            Game_Boy_Memory * gbMemory);
+void Set_Cartridge_header(  Game_Boy_Cartridge * cartridge,Game_Boy_Memory * gbMemory);
 Game_Boy_Cartridge * Init_Game_Boy_Cartridge();
 void Delete_Game_Boy_Cartridge(Game_Boy_Cartridge * cartridge);
 bool Cartridge_Check_Sum(Game_Boy_Cartridge * cartridge,Game_Boy_Memory * gbMemory);
 
 
-  
 #endif
 
