@@ -3,7 +3,10 @@
 
 #include <tools.h>
 #include <memory.h>
-#include <cartridge.h>
+//#include <cartridge.h>
+
+#define MEMORY 0x01
+#define ROM 0x02
 
 typedef enum {
 
@@ -31,9 +34,11 @@ typedef struct {
 
 } Memory_Management_Unit;
 
-Memory_Management_Unit * Init_MMU(Game_Boy_Cartridge * cartridge);
-void Write_To_Memory(uint8_t val,uint16_t address,Game_Boy_Memory * gbMemory);
-uint8_t Read_From_Memory(uint16_t address,Game_Boy_Memory * gbMemory);
+Memory_Management_Unit * Init_MMU(uint8_t cartType,uint8_t ramSize,uint8_t romSize);
+void Write_To_Memory(uint8_t val,uint16_t address,Game_Boy_Memory * gbMemory,uint8_t memorySpace);
+uint8_t Read_From_Memory(uint16_t address,Game_Boy_Memory * gbMemory,uint8_t memorySpace);
 void Delete_MMU(Memory_Management_Unit * mmu);
+void Write(Game_Boy_Memory * gbMemory,uint8_t val,uint16_t address);
+uint8_t Read(Game_Boy_Memory * gbMemory,uint16_t address);
 
 #endif

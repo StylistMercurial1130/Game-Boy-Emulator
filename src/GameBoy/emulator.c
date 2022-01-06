@@ -56,15 +56,8 @@ static void Set_Game_Boy_Memory() {
     gb.gbCartridge = Init_Game_Boy_Cartridge();
 
     GetFile(emu.romName,gb.gbMem->rom);
-    
-    uint8_t val;
-    for(size_t i = 0x000;i <= 0x3FFF;i++){
-        val = gb.gbMem->rom[i];
-        Write_To_Memory(val,i,gb.gbMem);
-    }
-
     Set_Cartridge_header(gb.gbCartridge,gb.gbMem);
-    gb.mmu = Init_MMU(gb.gbCartridge->cartType);
+    gb.mmu = Init_MMU(gb.gbCartridge->cartType,gb.gbCartridge->cartRamsize,gb.gbCartridge->cartRomsize);
     
 }
 
