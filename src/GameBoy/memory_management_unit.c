@@ -16,6 +16,9 @@ static MBC_Type mbcTypes[] = {
         
 };
 
+
+void Select_Rom_Bank(uint8_t romBank,Memory_Management_Unit * mmu){mmu->romBank = romBank;}
+
 Memory_Management_Unit * Init_MMU(uint8_t cartType,uint8_t ramSize,uint8_t romSize) {
 
     Memory_Management_Unit * mmu = (Memory_Management_Unit *)malloc(sizeof(Memory_Management_Unit));
@@ -35,55 +38,43 @@ Memory_Management_Unit * Init_MMU(uint8_t cartType,uint8_t ramSize,uint8_t romSi
     }
 
     mmu->ramBankcount = ramSize;
+    mmu->romBank = 1;
 
     return mmu;
 
 }
 
-void Write_To_Memory(uint8_t val,uint16_t address,Game_Boy_Memory * gbMemory,uint8_t memorySpace) {
-
-    if(memorySpace == MEMORY)
-        gbMemory->Mem[address] = val;
-    else if(memorySpace == ROM)
-            gbMemory->rom[address] = val;    
-
-}
-
-uint8_t Read_From_Memory(uint16_t address,Game_Boy_Memory * gbMemory,uint8_t memorySpace) {
-
-    if(memorySpace == MEMORY)
-        return gbMemory->Mem[address];
-    else if(memorySpace == ROM)
-            return gbMemory->rom[address];    
-
-}
-
-uint8_t Read(Game_Boy_Memory * gbMemory,uint16_t address) {
+uint8_t Read(Game_Boy_Memory * gbMemory,Memory_Management_Unit * mmu,uint16_t address) {
 
     if(address < 0x8000){
-
         if(address <= 0x3FFF)
             return gbMemory->rom[address];
-
+        else {
+            if(mmu->type == MBC1){
+                return gbMemory->rom[address + (((mmu->romBank & 0x1F) - 0x1) * 0x4000)];
+            } else return gbMemory->rom[address + (mmu->romBank - 0x1) * 0x4000];
+        }
+    } else {
+        NOTHING
     }
-
 }
 
-void Write(Game_Boy_Memory * gbMemory,uint8_t val,uint16_t address) {
+void Write(Game_Boy_Memory * gbMemory,Memory_Management_Unit * mmu,uint8_t val,uint16_t address) {
 
     if(address < 0x8000){
-        
         if(address <= 0x3FFF)
             gbMemory->rom[address] = val;
-            
-    }
-
-
+    }  
 
 }
+
+
+
+static void Write_MBC0(uint16_t address,Game_Boy_Memory * gbMemory,Memory_Management_Unit * mmu) {NOTHING}
+
 void Delete_MMU(Memory_Management_Unit * mmu) {
 
     free(mmu);
-    Log_Message("MMU has been released !");
+        Log_Message("MMU has been released !");
 
 }

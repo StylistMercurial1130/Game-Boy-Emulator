@@ -28,7 +28,7 @@ void Init_Game_Boy_Emulator(int argc,char ** argv) {
     
     Log_Cartridge_Info();
 
-    if(Cartridge_Check_Sum(gb.gbCartridge,gb.gbMem) == true) 
+    if(Cartridge_Check_Sum(gb.gbCartridge,gb.mmu,gb.gbMem) == true) 
         Log_Message("Emulator has been set up !");
     else {
         Log_Message("Emualtor failed to set up !. \n check for corrupt/wrong file !");
@@ -56,7 +56,7 @@ static void Set_Game_Boy_Memory() {
     gb.gbCartridge = Init_Game_Boy_Cartridge();
 
     GetFile(emu.romName,gb.gbMem->rom);
-    Set_Cartridge_header(gb.gbCartridge,gb.gbMem);
+    Set_Cartridge_header(gb.gbCartridge,gb.mmu,gb.gbMem);
     gb.mmu = Init_MMU(gb.gbCartridge->cartType,gb.gbCartridge->cartRamsize,gb.gbCartridge->cartRomsize);
     
 }
